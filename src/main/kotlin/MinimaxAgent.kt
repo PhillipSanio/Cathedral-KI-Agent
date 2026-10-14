@@ -32,15 +32,33 @@ class MinimaxAgent : Agent {
             return Optional.empty()
         }
 
-        //Erster Zug aus Liste wird gewählt (erstmal)
-        val chosenPlacement = allPossiblePlacements.first()
-        return Optional.of(chosenPlacement)
-         }
+        //In diesem Block geht die KI jeden legalen Spielzug durch, bewertet diese und wählt am Ende den besten.
+        var bestPlacement: Placement? = null
+        var bestScore = Int.MIN_VALUE
+
+        //Test von jedem legalen Zug
+        for (placement in allPossiblePlacements) {
+            //Spiel wird zum Testen dupliziert, damit das echte Spiel nicht verändert wird
+            val clonedGame = game.copy()
+
+            //Zug wird im Duplikat durchgeführt
+            clonedGame.takeTurn(placement)
+
+            //Score
+            //Holt den aktuellen Score aus dem Duplikat
+            val gameScore = clonedGame.score()
+            //Holt den Score des aktuellen Spielers aus der Map (oder 0 als Fallback)
+            val score = gameScore[clonedGame.currentPlayer] ?: 0
+
+            //Wenn der Zug den aktuellen Bestwert übertrifft, diesen als neuen Rekord speichern
+            if (score > bestScore) {
+                bestScore = score
+                bestPlacement = placement
+            }
+        }
+
+        return Optional.ofNullable(bestPlacement?: allPossiblePlacements.first())
     }
-
-
-
-
-
+    }
 
 
